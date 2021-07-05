@@ -1,4 +1,4 @@
 from app import create_app
 
 app = create_app()
-app.run(debug=app.config['DEBUG'])
+app.run(debug=True)

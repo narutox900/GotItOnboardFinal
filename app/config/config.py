@@ -15,12 +15,12 @@ class Config:
 
 
 class ProdConfig(Config):
-    FLASK_ENV = 'production'
+    DEVELOPMENT = False
     DEBUG = False
     TESTING = False
 
 
 class DevConfig(Config):
-    FLASK_ENV = 'development'
+    DEVELOPMENT = True
     DEBUG = True
     TESTING = True

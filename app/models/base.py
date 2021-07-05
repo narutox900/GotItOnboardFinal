@@ -1,6 +1,9 @@
 import datetime
 
+from sqlalchemy.exc import IntegrityError
+
 from app.db import db
+from app.utils.exception import DuplicateException
 
 
 class BaseModel(db.Model):
@@ -11,8 +14,11 @@ class BaseModel(db.Model):
     updated_time: datetime = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def save(self):
-        db.session.add(self)
-        db.session.commit()
+        try:
+            db.session.add(self)
+            db.session.commit()
+        except IntegrityError:
+            raise DuplicateException()
 
     def delete(self):
         db.session.delete(self)

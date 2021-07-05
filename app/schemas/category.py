@@ -8,3 +8,4 @@ class CreateCategorySchema(Schema):
 
 class GetCategorySchema(CreateCategorySchema):
     id = fields.Integer()
+    user_id = fields.Integer()

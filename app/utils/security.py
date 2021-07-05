@@ -6,6 +6,8 @@ import jwt
 
 from app.config import config
 from app.models.user import UserModel
+from app.utils.exception import AuthenticationException
+from app.utils.messages.message import INVALID_TOKEN, MISSING_TOKEN
 
 
 def encode_token(payload):
@@ -14,7 +16,11 @@ def encode_token(payload):
 
 
 def decode_token(token):
-    return jwt.decode(token, config.Config.SECRET_KEY)
+    try:
+        payload = jwt.decode(token, config.Config.SECRET_KEY, algorithms='HS256')
+    except jwt.PyJWTError:
+        raise AuthenticationException(INVALID_TOKEN)
+    return payload
 
 
 def token_required(function):
@@ -22,20 +28,16 @@ def token_required(function):
     def decorator(*args, **kwargs):
         header = flask.request.headers.get('Authorization', None)
         if not header:
-            return
-        if len(header) != 2:
-            return
-        if header[0] != 'Bearer':
-            return
+            raise AuthenticationException(MISSING_TOKEN)
+        header = header.split()
+        if len(header) != 2 or header[0] != 'Bearer':
+            raise AuthenticationException(MISSING_TOKEN)
 
-        try:
-            payload = decode_token(header[1])
-            user = UserModel.get_user_by_username(payload['aud'])
-            if not user:
-                raise jwt.PyJWTError
+        payload = decode_token(header[1])
+        user = UserModel.get_user_by_id(payload['uid'])
+        if not user:
+            raise AuthenticationException(INVALID_TOKEN)
 
-        except jwt.PyJWTError:
-            return
         return function(user=user, *args, **kwargs)
 
     return decorator
