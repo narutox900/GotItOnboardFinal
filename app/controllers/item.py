@@ -51,7 +51,7 @@ def delete_item(item, category, user):
 @load_category_by_id
 @load_item_by_id
 def get_item_by_id(item, category):
-    return jsonify(items=GetItemSchema().dump(item)), 200
+    return jsonify(item=GetItemSchema().dump(item)), 200
 
 
 @item_blueprint.route('', methods=['GET'])
@@ -65,4 +65,5 @@ def get_items_by_category_id(category, data):
 @all_item_blueprint.route('', methods=['GET'])
 @load_and_validate_data(PaginationSchema)
 def get_items_sorted(data):
-    return jsonify(items=GetItemSchema(many=True).dump(ItemModel.get_items_sorted(data['page'], data['limit']))), 200
+    return jsonify(items=GetItemSchema(many=True).dump(ItemModel.get_items_sorted(data['page'], data['limit'])),
+                   total=ItemModel.get_total_items_number()), 200

@@ -24,3 +24,10 @@ class DevConfig(Config):
     DEVELOPMENT = True
     DEBUG = True
     TESTING = True
+
+
+class TestConfig(Config):
+    DEVELOPMENT = True
+    DEBUG = True
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'mysql+pymysql://root:12345678@localhost/test'

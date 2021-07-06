@@ -14,11 +14,8 @@ class BaseModel(db.Model):
     updated_time: datetime = db.Column(db.DateTime, default=datetime.datetime.utcnow)
 
     def save(self):
-        try:
-            db.session.add(self)
-            db.session.commit()
-        except IntegrityError:
-            raise DuplicateException()
+        db.session.add(self)
+        db.session.commit()
 
     def delete(self):
         db.session.delete(self)

@@ -31,7 +31,7 @@ def token_required(function):
             raise AuthenticationException(MISSING_TOKEN)
         header = header.split()
         if len(header) != 2 or header[0] != 'Bearer':
-            raise AuthenticationException(MISSING_TOKEN)
+            raise AuthenticationException(INVALID_TOKEN)
 
         payload = decode_token(header[1])
         user = UserModel.get_user_by_id(payload['uid'])

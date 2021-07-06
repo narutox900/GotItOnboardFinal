@@ -17,8 +17,6 @@ class UserModel(BaseModel):
 
     def __init__(self, username, password):
         self.username = username
-        if not re.search('^[A-Za-z0-9.*[!@#$%^&*_]{6,}$', password):
-            raise BadRequestException(INVALID_PASSWORD)
         self.password = generate_password_hash(password)
 
     @classmethod
