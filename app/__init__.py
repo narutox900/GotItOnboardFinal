@@ -3,8 +3,8 @@ import os
 from flask import Flask, jsonify
 from werkzeug.exceptions import HTTPException
 
-from app.controllers.item import item_blueprint, all_item_blueprint
 from app.controllers.category import category_blueprint
+from app.controllers.item import item_blueprint, all_item_blueprint
 from app.controllers.user import register_blueprint, login_blueprint
 from app.models import category, item, user
 from app.utils.exception import CustomException

@@ -1,0 +1,13 @@
+version: '3.9'
+
+services:
+  db:
+    build:
+      context: db_service
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 33060:3306
+    volumes:
+      - ./db-data:/var/lib/mysql
+    cap_add: [ SYS_NICE ]

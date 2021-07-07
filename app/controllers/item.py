@@ -1,13 +1,11 @@
 from flask import Blueprint, jsonify
-from sqlalchemy.exc import IntegrityError
 
 from app.models.item import ItemModel
-from app.utils.security import token_required
-from app.utils.validation import load_and_validate_data, item_owner_validate, duplicate_item_name_validate
 from app.schemas.item import CreateItemSchema, GetItemSchema
 from app.schemas.pagination import PaginationSchema
 from app.utils.loader import load_category_by_id, load_item_by_id
-from app.utils.exception import DuplicateException
+from app.utils.security import token_required
+from app.utils.validation import load_and_validate_data, item_owner_validate, duplicate_item_name_validate
 
 item_blueprint = Blueprint('item_blueprint', __name__, url_prefix='/categories/<category_id>/items')
 all_item_blueprint = Blueprint('all_item_blueprint', __name__, url_prefix='/items')

@@ -1,11 +1,11 @@
 from flask import Blueprint, jsonify
 
 from app.models.category import CategoryModel
-from app.utils.validation import load_and_validate_data, category_owner_validate, duplicate_category_name_validate
-from app.utils.security import token_required
 from app.schemas.category import CreateCategorySchema, GetCategorySchema
 from app.schemas.pagination import PaginationSchema
 from app.utils.loader import load_category_by_id
+from app.utils.security import token_required
+from app.utils.validation import load_and_validate_data, category_owner_validate, duplicate_category_name_validate
 
 category_blueprint = Blueprint('category_blueprint', __name__, url_prefix='/categories')
 

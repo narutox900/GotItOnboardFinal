@@ -3,11 +3,11 @@ from flask import Blueprint, jsonify
 from werkzeug.security import check_password_hash
 
 from app.models.user import UserModel
-from app.utils.validation import load_and_validate_data, duplicate_username_validate
 from app.schemas.user import CreateUserSchema
-from app.utils.security import encode_token
 from app.utils.exception import AuthenticationException
 from app.utils.messages.message import INVALID_CREDENTIALS
+from app.utils.security import encode_token
+from app.utils.validation import load_and_validate_data, duplicate_username_validate
 
 register_blueprint = Blueprint('register_blueprint', __name__, url_prefix='/register')
 login_blueprint = Blueprint('login_blueprint', __name__, url_prefix='/login')
