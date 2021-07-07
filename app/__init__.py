@@ -18,19 +18,17 @@ def create_app(test_config=None):
         # load the test config if passed in
         app.config.from_object('app.config.config.TestConfig')
     else:
-        # load the instance config, if it exists, when not testing
-        app.config.from_object('app.config.config.DevConfig')
+        env = os.getenv('FLASK_ENV')
+        if env == 'development':
+            app.config.from_object('app.config.config.DevConfig')
+        else:
+            app.config.from_object('app.config.config.ProdConfig')
 
     app.register_blueprint(item_blueprint)
     app.register_blueprint(all_item_blueprint)
     app.register_blueprint(category_blueprint)
     app.register_blueprint(register_blueprint)
     app.register_blueprint(login_blueprint)
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
 
     @app.errorhandler(HTTPException)
     def handle_http_exception(e):

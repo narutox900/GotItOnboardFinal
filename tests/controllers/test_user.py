@@ -1,4 +1,5 @@
 from tests.utils import request
+from app.utils.messages.message import USERNAME_DUPLICATED, INVALID_CREDENTIALS
 
 
 class TestRegister:
@@ -17,6 +18,7 @@ class TestRegister:
         }
         rv = request.post(client, '/register', data)
         assert rv.status_code == 409
+        assert rv.get_json()['message'] == USERNAME_DUPLICATED
 
     def test_register_invalid_password(self, client):
         data = {
@@ -67,6 +69,7 @@ class TestLogin:
         }
         rv = request.post(client, '/login', data)
         assert rv.status_code == 401
+        assert rv.get_json()['message'] == INVALID_CREDENTIALS
 
     def test_login_wrong_username(self, client):
         data = {
@@ -75,6 +78,7 @@ class TestLogin:
         }
         rv = request.post(client, '/login', data)
         assert rv.status_code == 401
+        assert rv.get_json()['message'] == INVALID_CREDENTIALS
 
     def test_login_missing_field(self, client):
         data = {

@@ -1,17 +1,26 @@
 from tests.utils import token
 from tests.utils import request
+from app.utils.messages.message import UNAUTHORIZED, ITEM_DUPLICATED, ITEM_NOT_FOUND
 
 
 class TestGetItem:
     def test_get_all_items(self, client):
         rv = client.get('/items')
         assert rv.status_code == 200
-        assert rv.get_json()['total'] == 6
+        body = rv.get_json()
+        assert body['total'] == 6
+        assert body['items'][0]['name'] == 'mac'
+        assert body['items'][1]['description'] == 'run'
+        assert body['items'][2]['user_id'] == 1
 
     def test_get_all_items_of_category(self, client):
         rv = client.get('/categories/1/items')
         assert rv.status_code == 200
-        assert rv.get_json()['total'] == 3
+        body = rv.get_json()
+        assert body['total'] == 3
+        assert body['items'][0]['name'] == 'football'
+        assert body['items'][1]['price'] == 3.99
+        assert body['items'][2]['user_id'] == 1
 
     def test_get_all_items_valid_parameter(self, client):
         rv = client.get('/items?page=1&limit=2')
@@ -19,6 +28,7 @@ class TestGetItem:
         body = rv.get_json()
         assert body['total'] == 6
         assert len(body['items']) == 2
+        assert body['items'][0]['name'] == 'mac'
 
     def test_get_all_items_of_category_valid_parameter(self, client):
         rv = client.get('/categories/1/items?page=1&limit=2')
@@ -26,6 +36,8 @@ class TestGetItem:
         body = rv.get_json()
         assert body['total'] == 3
         assert len(body['items']) == 2
+        assert body['items'][0]['name'] == 'football'
+        assert body['items'][1]['price'] == 3.99
 
     def test_get_all_items_invalid_parameter(self, client):
         rv = client.get('/items?page=-1&limit=2')
@@ -47,6 +59,7 @@ class TestGetItem:
     def test_get_invalid_item(self, client):
         rv = client.get('/categories/1/items/20')
         assert rv.status_code == 404
+        assert rv.get_json()['message'] == ITEM_NOT_FOUND
 
 
 class TestPostCategory:
@@ -75,6 +88,7 @@ class TestPostCategory:
         }
         rv = request.post(client, '/categories/1/items', data, access_token)
         assert rv.status_code == 409
+        assert rv.get_json()['message'] == ITEM_DUPLICATED
 
     def test_insert_item_invalid_type(self, client):
         access_token = token.get_access_token(client)
@@ -150,6 +164,7 @@ class TestPutCategory:
         }
         rv = request.put(client, '/categories/1/items/2', data, access_token)
         assert rv.status_code == 403
+        assert rv.get_json()['message'] == UNAUTHORIZED
 
     def test_update_item_invalid_body(self, client):
         access_token = token.get_access_token(client)
@@ -172,3 +187,4 @@ class TestDeleteCategory:
 
         rv = request.delete(client, '/categories/1/items/2', access_token)
         assert rv.status_code == 403
+        assert rv.get_json()['message'] == UNAUTHORIZED

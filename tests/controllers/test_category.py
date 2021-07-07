@@ -1,12 +1,18 @@
 from tests.utils import token
 from tests.utils import request
+from app.utils.messages.message import CATEGORY_DUPLICATED, CATEGORY_NOT_FOUND, UNAUTHORIZED, INVALID_TOKEN, \
+    MISSING_TOKEN
 
 
 class TestGetCategory:
     def test_get_all_categories(self, client):
         rv = client.get('/categories')
         assert rv.status_code == 200
-        assert rv.get_json()['total'] == 4
+        body = rv.get_json()
+        assert body['total'] == 4
+        assert body['categories'][0]['name'] == 'balls'
+        assert body['categories'][1]['description'] == 'read'
+        assert body['categories'][2]['user_id'] == 2
 
     def test_get_all_categories_valid_parameter(self, client):
         rv = client.get('/categories?page=1&limit=2')
@@ -14,6 +20,8 @@ class TestGetCategory:
         body = rv.get_json()
         assert body['total'] == 4
         assert len(body['categories']) == 2
+        assert body['categories'][0]['name'] == 'balls'
+        assert body['categories'][1]['description'] == 'read'
 
     def test_get_all_categories_invalid_parameter(self, client):
         rv = client.get('/categories?page=-1&limit=2')
@@ -33,6 +41,7 @@ class TestGetCategory:
     def test_get_invalid_category(self, client):
         rv = client.get('/categories/20')
         assert rv.status_code == 404
+        assert rv.get_json()['message'] == CATEGORY_NOT_FOUND
 
 
 class TestPostCategory:
@@ -57,6 +66,7 @@ class TestPostCategory:
         }
         rv = request.post(client, '/categories', data, access_token)
         assert rv.status_code == 409
+        assert rv.get_json()['message'] == CATEGORY_DUPLICATED
 
     def test_insert_category_invalid_type(self, client):
         access_token = token.get_access_token(client)
@@ -122,6 +132,7 @@ class TestPutCategory:
         }
         rv = request.put(client, '/categories/3', data, access_token)
         assert rv.status_code == 403
+        assert rv.get_json()['message'] == UNAUTHORIZED
 
     def test_update_category_invalid_body(self, client):
         access_token = token.get_access_token(client)
@@ -144,3 +155,33 @@ class TestDeleteCategory:
 
         rv = request.delete(client, '/categories/3', access_token)
         assert rv.status_code == 403
+        assert rv.get_json()['message'] == UNAUTHORIZED
+
+
+class TestToken:
+    def test_missing_token(self, client):
+        rv = post_request(client, '')
+        assert rv.get_json()['message'] == MISSING_TOKEN
+
+    def test_invalid_token(self, client):
+        rv = post_request(client, 'Bearer')
+        assert rv.get_json()['message'] == INVALID_TOKEN
+        rv = post_request(client,
+                          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+                          'eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.'
+                          'SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c')
+        assert rv.get_json()['message'] == INVALID_TOKEN
+        rv = post_request(client, 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.'
+                                  'eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.'
+                                  'SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c')
+        assert rv.get_json()['message'] == INVALID_TOKEN
+        rv = post_request(client, 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXV')
+        assert rv.get_json()['message'] == INVALID_TOKEN
+
+
+def post_request(client, access_token):
+    data = {
+        'name': 'test_cat',
+        'description': 'testing'
+    }
+    return request.post(client, '/categories', data, access_token)

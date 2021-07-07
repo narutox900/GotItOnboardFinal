@@ -1,11 +1,7 @@
-import re
-
 from werkzeug.security import generate_password_hash
 
 from app.db import db
 from .base import BaseModel
-from app.utils.exception import BadRequestException
-from app.utils.messages.message import INVALID_PASSWORD
 
 
 class UserModel(BaseModel):

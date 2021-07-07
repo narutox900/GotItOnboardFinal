@@ -1,9 +1,6 @@
 import datetime
 
-from sqlalchemy.exc import IntegrityError
-
 from app.db import db
-from app.utils.exception import DuplicateException
 
 
 class BaseModel(db.Model):
