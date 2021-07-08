@@ -1,9 +1,8 @@
 from flask import Blueprint, jsonify
-
 from werkzeug.security import check_password_hash
 
 from app.models.user import UserModel
-from app.schemas.user import CreateUserSchema
+from app.schemas.user import CreateUserSchema, GetUserSchema
 from app.utils.exception import AuthenticationException
 from app.utils.messages.message import INVALID_CREDENTIALS
 from app.utils.security import encode_token
@@ -19,15 +18,15 @@ login_blueprint = Blueprint('login_blueprint', __name__, url_prefix='/login')
 def register(data):
     user = UserModel(**data)
     user.save()
-    return {'message': 'Registered successfully'}, 200
+    return jsonify(message='Registered successfully'), 200
 
 
 @login_blueprint.route('', methods=['POST'])
-@load_and_validate_data(CreateUserSchema)
+@load_and_validate_data(GetUserSchema)
 def login(data):
     user = UserModel.get_user_by_username(data['username'])
     if user and check_password_hash(user.password, data['password']):
         token = encode_token({'uid': user.id})
-        return jsonify(access_token=token), 200
+        return jsonify(access_token=token, uid=user.id), 200
 
     raise AuthenticationException(INVALID_CREDENTIALS)

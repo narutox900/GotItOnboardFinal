@@ -4,27 +4,21 @@ from flask import Flask, jsonify
 from werkzeug.exceptions import HTTPException
 
 from app.controllers.category import category_blueprint
-from app.controllers.item import item_blueprint, all_item_blueprint
+from app.controllers.item import category_item_blueprint, all_item_blueprint
 from app.controllers.user import register_blueprint, login_blueprint
+from app.db import db, init_app
 from app.models import category, item, user
 from app.utils.exception import CustomException
 
 
-def create_app(test_config=None):
+def create_app():
     # create and configure the app
-    app = Flask(__name__, instance_relative_config=True)
+    app = Flask(__name__)
 
-    if test_config:
-        # load the test config if passed in
-        app.config.from_object('app.config.config.TestConfig')
-    else:
-        env = os.getenv('FLASK_ENV')
-        if env == 'development':
-            app.config.from_object('app.config.config.DevConfig')
-        else:
-            app.config.from_object('app.config.config.ProdConfig')
+    env = os.getenv('FLASK_ENV').capitalize()
+    app.config.from_object(f'app.config.config.{env}Config')
 
-    app.register_blueprint(item_blueprint)
+    app.register_blueprint(category_item_blueprint)
     app.register_blueprint(all_item_blueprint)
     app.register_blueprint(category_blueprint)
     app.register_blueprint(register_blueprint)
@@ -38,11 +32,7 @@ def create_app(test_config=None):
     def handle_custom_exception(e):
         return jsonify(e.body), e.status_code
 
-    from app.db import db
     db.init_app(app)
-
-    @app.before_first_request
-    def create_tables():
-        db.create_all()
+    init_app(app)
 
     return app

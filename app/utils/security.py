@@ -2,9 +2,9 @@ from _datetime import datetime, timedelta
 from functools import wraps
 
 import flask
+from flask import current_app
 import jwt
 
-from app.config import config
 from app.models.user import UserModel
 from app.utils.exception import AuthenticationException
 from app.utils.messages.message import INVALID_TOKEN, MISSING_TOKEN
@@ -12,12 +12,12 @@ from app.utils.messages.message import INVALID_TOKEN, MISSING_TOKEN
 
 def encode_token(payload):
     payload = {**payload, 'iss': 'app', 'iat': datetime.utcnow(), 'exp': datetime.utcnow() + timedelta(days=1)}
-    return jwt.encode(payload, config.Config.SECRET_KEY)
+    return jwt.encode(payload, current_app.secret_key)
 
 
 def decode_token(token):
     try:
-        payload = jwt.decode(token, config.Config.SECRET_KEY, algorithms='HS256')
+        payload = jwt.decode(token, current_app.secret_key, algorithms='HS256')
     except jwt.PyJWTError:
         raise AuthenticationException(INVALID_TOKEN)
     return payload

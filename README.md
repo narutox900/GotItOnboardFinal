@@ -3,43 +3,65 @@
 ## Installation
 
 1. Initialize and activate a virtual environment
+
 ```
 $ python3 -m venv env
 $ source env/bin/activate
 ```
 
 2. Install dependencies
+
 ```
 $ pip install -r requirements.txt
 ```
 
 ## Usage
+
 1. Start the database
+
 ```
 $ docker-compose up
 ```
 
 2. Set environment variable
+
 ```
 $ export FLASK_ENV=development # development, production
 ```
 
-3. Run the server
+3. Initialize database
+
+```
+$ flask init-db
+```
+
+4. Run the server
+
 ```
 $ flask run
 ```
 
-4. Turn off the server
+## Shut down the database
+
 ```
 $ docker-compose down
 ```
 
 ## Run tests
+
 ```
+$ export FLASK_ENV=test
 $ pytest
 ```
 
+## Clear database
+
+```
+$ flask clear-db
+```
+
 ## Hard reset database
+
 ```
 $ docker-compose down -v
 $ docker-compose build

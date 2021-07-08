@@ -29,7 +29,7 @@ class ItemModel(BaseModel):
         return cls.query.filter_by(category_id=category_id).offset(offset).limit(limit).all()
 
     @classmethod
-    def get_items_sorted(cls, page, limit):
+    def get_latest_items(cls, page, limit):
         offset = (page - 1) * limit
         return cls.query.order_by(desc(cls.updated_time)).offset(offset).limit(limit).all()
 
@@ -40,3 +40,7 @@ class ItemModel(BaseModel):
     @classmethod
     def get_total_items_number(cls):
         return cls.query.count()
+
+    @classmethod
+    def get_category_items_number(cls, category_id):
+        return cls.query.filter_by(category_id=category_id).count()
