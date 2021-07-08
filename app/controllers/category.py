@@ -43,7 +43,7 @@ def update_category(category, user, data):
 @token_required
 @load_category_by_id
 @category_owner_validate
-def delete_category(category, user):
+def delete_category(category, *args, **kwargs):
     category.delete()
     return jsonify(message='Deleted'), 200
 

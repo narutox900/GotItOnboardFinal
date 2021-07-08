@@ -30,7 +30,7 @@ def create_item(category, user, data):
 @load_category_by_id
 @load_item_by_id
 @item_owner_validate
-def update_item(item, category, user, data):
+def update_item(item, data, *args, **kwargs):
     item.update(**data)
     return jsonify(item=GetItemSchema().dump(item)), 200
 
@@ -40,7 +40,7 @@ def update_item(item, category, user, data):
 @load_category_by_id
 @load_item_by_id
 @item_owner_validate
-def delete_item(item, category, user):
+def delete_item(item, *args, **kwargs):
     item.delete()
     return jsonify(message='Deleted'), 200
 
@@ -48,7 +48,7 @@ def delete_item(item, category, user):
 @item_blueprint.route('/<item_id>', methods=['GET'])
 @load_category_by_id
 @load_item_by_id
-def get_item_by_id(item, category):
+def get_item_by_id(item, *args, **kwargs):
     return jsonify(item=GetItemSchema().dump(item)), 200
 
 
