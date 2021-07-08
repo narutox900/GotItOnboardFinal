@@ -7,7 +7,8 @@ from app.models.item import ItemModel
 from app.models.category import CategoryModel
 from app.models.user import UserModel
 from app.utils.exception import BadRequestException, DuplicateException, AuthorizationException
-from app.utils.messages.message import UNAUTHORIZED, USERNAME_DUPLICATED, CATEGORY_DUPLICATED, ITEM_DUPLICATED
+from app.utils.messages.message import UNAUTHORIZED, USERNAME_DUPLICATED, CATEGORY_DUPLICATED, ITEM_DUPLICATED, \
+    LOGGED_IN
 
 
 def load_and_validate_data(schema):
@@ -72,5 +73,16 @@ def duplicate_username_validate(function):
         if UserModel.get_user_by_username(data['username']):
             raise DuplicateException(USERNAME_DUPLICATED)
         return function(data=data, *args, **kwargs)
+
+    return decorator
+
+
+def logged_in_validate(function):
+    @wraps(function)
+    def decorator(*args, **kwargs):
+        header = request.headers.get('Authorization', None)
+        if header:
+            raise BadRequestException(LOGGED_IN)
+        return function(*args, **kwargs)
 
     return decorator
