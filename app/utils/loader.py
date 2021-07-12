@@ -28,11 +28,22 @@ def load_category_by_id(function):
     return decorator
 
 
-def dump_schema_decorator(schema):
+def dump_schema_decorator(schema, many=False):
     def decorator(function):
         @wraps(function)
-        def wrapper(item, many=False):
-            return schema(many=many).dump(item)
+        def wrapper(*args, **kwargs):
+            ret_val = function(*args, **kwargs)
+            ret_dict = {}
+            if type(ret_val) is dict:
+                for key, value in ret_val.items():
+                    if type(value) is list:
+                        ret_dict[key] = schema(many=many).dump(value)
+                    else:
+                        ret_dict[key] = value
+            else:
+                ret_dict = schema(many=many).dump(ret_val)
+
+            return ret_dict
 
         return wrapper
 

@@ -12,21 +12,23 @@ category_blueprint = Blueprint('category_blueprint', __name__, url_prefix='/cate
 
 @category_blueprint.route('', methods=['GET'])
 @load_and_validate_data(PaginationSchema)
+@dump_schema_decorator(GetCategorySchema, True)
 def get_categories(data):
     categories = CategoryModel.get_all_category(data['page'], data['limit'])
-    return jsonify(categories=dump_category(categories, many=True),
-                   total=CategoryModel.get_total_categories_number(), limit=data['limit']), 200
+    return {'categories': categories,
+            'total': CategoryModel.get_total_categories_number(), 'limit': data['limit']}
 
 
 @category_blueprint.route('', methods=['POST'])
 @token_required
 @load_and_validate_data(CreateCategorySchema)
 @duplicate_category_name_validate
+@dump_schema_decorator(GetCategorySchema)
 def create_category(user, data):
     category = CategoryModel(**data)
     category.user_id = user.id
     category.save()
-    return jsonify(dump_category(category)), 200
+    return category
 
 
 @category_blueprint.route('/<category_id>', methods=['PUT'])
@@ -34,9 +36,10 @@ def create_category(user, data):
 @load_and_validate_data(CreateCategorySchema)
 @load_category_by_id
 @category_owner_validate
+@dump_schema_decorator(GetCategorySchema)
 def update_category(category, data, user):
     category.update(**data)
-    return jsonify(dump_category(category)), 200
+    return category
 
 
 @category_blueprint.route('/<category_id>', methods=['DELETE'])
@@ -50,10 +53,6 @@ def delete_category(category, *args, **kwargs):
 
 @category_blueprint.route('/<category_id>', methods=['GET'])
 @load_category_by_id
-def get_category(category):
-    return jsonify(dump_category(category)), 200
-
-
 @dump_schema_decorator(GetCategorySchema)
-def dump_category(category, many=False):
-    pass
+def get_category(category):
+    return category
