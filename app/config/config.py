@@ -10,7 +10,6 @@ class Config:
 
 class ProductionConfig(Config):
     SECRET_KEY = 'production_key'
-    pass
 
 
 class DevelopmentConfig(Config):

@@ -2,7 +2,7 @@ from flask import Blueprint, jsonify
 
 from app.models.item import ItemModel
 from app.schemas.item import CreateItemSchema, GetItemSchema
-from app.schemas.pagination import PaginationSchema
+from app.schemas.pagination import PaginationSchema, ItemPaginationSchema
 from app.utils.loader import load_category_by_id, load_item_by_id, dump_schema_decorator
 from app.utils.security import token_required
 from app.utils.validation import load_and_validate_data, item_owner_validate, duplicate_item_name_validate
@@ -58,7 +58,7 @@ def get_item_by_id(item, *args, **kwargs):
 @category_item_blueprint.route('', methods=['GET'])
 @load_and_validate_data(PaginationSchema)
 @load_category_by_id
-@dump_schema_decorator(GetItemSchema, True)
+@dump_schema_decorator(ItemPaginationSchema)
 def get_items(category, data):
     items = ItemModel.get_items_by_category_id(category_id=category.id, page=data['page'], limit=data['limit'])
     return {'items': items, 'total': ItemModel.get_category_items_number(category.id),
@@ -67,7 +67,7 @@ def get_items(category, data):
 
 @all_item_blueprint.route('', methods=['GET'])
 @load_and_validate_data(PaginationSchema)
-@dump_schema_decorator(GetItemSchema, True)
+@dump_schema_decorator(ItemPaginationSchema)
 def get_latest_items(data):
     return {'items': ItemModel.get_latest_items(data['page'], data['limit']),
             'total': ItemModel.get_total_items_number(), 'limit': data['limit']}
