@@ -50,8 +50,7 @@ $ docker-compose down
 ## Run tests
 
 ```
-$ export FLASK_ENV=test
-$ pytest
+$ bash test.sh
 ```
 
 ## Clear database

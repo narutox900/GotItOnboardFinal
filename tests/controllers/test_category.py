@@ -33,7 +33,6 @@ class TestGetCategory:
         rv = client.get('/categories/1')
         assert rv.status_code == 200
         body = rv.get_json()
-        body = body
         assert body['name'] == 'balls'
         assert body['description'] == 'kick'
         assert body['user_id'] == 1
@@ -54,7 +53,6 @@ class TestPostCategory:
         rv = request.post(client, '/categories', data, access_token)
         assert rv.status_code == 200
         body = rv.get_json()
-        body = body
         assert body['name'] == data['name']
         assert body['description'] == data['description']
 

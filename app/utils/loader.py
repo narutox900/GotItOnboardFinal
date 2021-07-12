@@ -26,3 +26,14 @@ def load_category_by_id(function):
         return function(category=category, *args, **kwargs)
 
     return decorator
+
+
+def dump_schema_decorator(schema):
+    def decorator(function):
+        @wraps(function)
+        def wrapper(item, many=False):
+            return schema(many=many).dump(item)
+
+        return wrapper
+
+    return decorator

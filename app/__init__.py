@@ -15,8 +15,13 @@ def create_app():
     # create and configure the app
     app = Flask(__name__)
 
-    env = os.getenv('FLASK_ENV').capitalize()
-    app.config.from_object(f'app.config.config.{env}Config')
+    try:
+        env = os.getenv('FLASK_ENV').capitalize()
+        app.config.from_object(f'app.config.config.{env}Config')
+    except (ImportError, AttributeError):
+        # Fallback value
+        app.config['ENV'] = 'production'
+        app.config.from_object('app.config.config.ProductionConfig')
 
     app.register_blueprint(category_item_blueprint)
     app.register_blueprint(all_item_blueprint)

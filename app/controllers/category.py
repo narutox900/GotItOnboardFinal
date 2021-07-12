@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify
 from app.models.category import CategoryModel
 from app.schemas.category import CreateCategorySchema, GetCategorySchema
 from app.schemas.pagination import PaginationSchema
-from app.utils.loader import load_category_by_id
+from app.utils.loader import load_category_by_id, dump_schema_decorator
 from app.utils.security import token_required
 from app.utils.validation import load_and_validate_data, category_owner_validate, duplicate_category_name_validate
 
@@ -54,5 +54,6 @@ def get_category(category):
     return jsonify(dump_category(category)), 200
 
 
+@dump_schema_decorator(GetCategorySchema)
 def dump_category(category, many=False):
-    return GetCategorySchema(many=many).dump(category)
+    pass

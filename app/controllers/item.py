@@ -3,7 +3,7 @@ from flask import Blueprint, jsonify
 from app.models.item import ItemModel
 from app.schemas.item import CreateItemSchema, GetItemSchema
 from app.schemas.pagination import PaginationSchema
-from app.utils.loader import load_category_by_id, load_item_by_id
+from app.utils.loader import load_category_by_id, load_item_by_id, dump_schema_decorator
 from app.utils.security import token_required
 from app.utils.validation import load_and_validate_data, item_owner_validate, duplicate_item_name_validate
 
@@ -68,5 +68,6 @@ def get_latest_items(data):
                    total=ItemModel.get_total_items_number(), limit=data['limit']), 200
 
 
+@dump_schema_decorator(GetItemSchema)
 def dump_item(item, many=False):
-    return GetItemSchema(many=many).dump(item)
+    pass

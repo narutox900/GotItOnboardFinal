@@ -49,7 +49,6 @@ class TestGetItem:
         rv = client.get('/categories/1/items/1')
         assert rv.status_code == 200
         body = rv.get_json()
-        body = body
         assert body['name'] == 'football'
         assert body['description'] == 'kick'
         assert body['user_id'] == 1
@@ -73,7 +72,6 @@ class TestPostCategory:
         rv = request.post(client, '/categories/1/items', data, access_token)
         assert rv.status_code == 200
         body = rv.get_json()
-        body = body
         assert body['name'] == data['name']
         assert body['description'] == data['description']
         assert body['price'] == data['price']
@@ -150,7 +148,6 @@ class TestPutCategory:
         rv = request.put(client, '/categories/1/items/1', data, access_token)
         assert rv.status_code == 200
         body = rv.get_json()
-        body = body
         assert body['name'] == data['name']
         assert body['description'] == data['description']
         assert body['price'] == data['price']
